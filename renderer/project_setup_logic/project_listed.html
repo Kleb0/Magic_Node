@@ -1,0 +1,72 @@
+<div id="project-listed">
+
+  <h1>Magic Node</h1>
+
+
+  <p id="welcome-text">
+    Select a project or create a new one.
+  </p>
+
+  <div id="project-list">
+    
+    <!-- project will be add here automatically -->    
+  </div>
+
+  <div id="project-actions">
+   
+    <button id="open-project">
+      Open Project
+    </button>
+
+    <button id="new-project">
+      New Project
+    </button>
+
+    <button id="delete-project">
+      Delete Project
+    </button>
+
+    <div id="new-project-modal" class="hidden">
+
+      <div id="new-project-dialog">
+
+            <h2>New Project</h2>
+
+      <input 
+        id="new-project-name"
+        type="text"
+        placeholder="Project name"
+      >
+
+      <div class="folder-row">
+
+        <input
+          id="new-project-folder"
+          type="text"
+          readonly
+        >
+
+        <button id="browse-new-project-folder">
+          Browse...
+        </button>
+
+
+      </div>
+
+      <div id="new-project-dialog-buttons">
+
+        <button id = "confirm-new-project">
+          Create
+        </button>
+
+        <button id="cancel-new-project">
+          Cancel
+        </button>
+
+      </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+ 
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Magic Node</title>
+    <link rel="stylesheet" href="project_window.css">
+  </head>
+ 
+
+  <body>
+
+    <div id="layout">
+
+      <main id="workspace">
+
+        <h1>Test</h1>
+
+        <div id="project-board">
+
+          <div id="folder-tree-panel">
+          
+            <h2>Project</h2>
+           
+            <div id="folder-tree">
+
+            </div>
+          
+          </div>
+
+          <div id="card-area">
+
+            <div id="selected-folder-header" class="hidden">
+
+                <h2 id="selected-folder-name"></h2>
+
+            </div>
+
+
+          </div>
+
+
+        </div> 
+      </main>
+
+    </div>
+
+    <div id="context-menu" class="hidden">
+
+      <div id="folder-context-menu" class ="hidden">
+        <input
+        id="new-item-name"
+        type="text"
+        placeholder="Folder or file name"
+        >
+
+        <button id="create-folder">
+          Create Folder
+        </button>
+
+        <button id="folder-context-create-file">
+          Create File 
+        </button>
+
+        <button 
+          id="rename-folder"
+          class="hidden"
+        >
+        Rename Selected Folder
+        </button>
+
+        <button 
+          id="delete-folder"
+          class="hidden"
+        >
+          Delete Selected Folder
+        </button>
+
+      </div>
+
+      <div id="card-context-menu" class="hidden">
+
+        <input
+          id="new-card-name-context"
+          type="text"
+          placeholder="File name"
+        >
+
+        <button id="create-file-context">
+          Create File
+        </button>
+
+        <button id="rename-selected-file">
+          Rename Selected File
+        </button>
+
+        <button id="delete-selected-file">
+          Delete Selected File 
+        </button>
+
+      </div>
+
+    </div>
+
+    <div id="card-modal" class="hidden">
+
+      <input
+        id="new-card-name"
+        type="text"
+        placeholder="File name"
+      >
+
+      <button id="create-card">
+        Create card
+      </button>
+
+
+    </div>
+
+    <script type ="module" src="project_window.js"></script>
+
+    <div id="drag-ghost" class="hidden"></div>
+  </body>
+
+</html>
+
+

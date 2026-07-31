@@ -1,0 +1,80 @@
+#project-setup{
+
+    width:500px;
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+#project-setup h1{
+
+    text-align:center;
+    color:#d0d0d0;
+
+    font-size:28px;
+}
+
+.project-field{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+}
+
+.project-field label{
+
+    color:#cccccc;
+
+    font-size:15px;
+}
+
+.project-field input{
+
+    height:38px;
+
+    border:1px solid #666;
+
+    border-radius:6px;
+
+    background:#2a2a2a;
+
+    color:white;
+
+    padding:0 10px;
+}
+
+.folder-row{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.folder-row input{
+
+    flex:1;
+}
+
+button{
+
+    height:40px;
+
+    border:none;
+
+    border-radius:6px;
+
+    background:#800000;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+}
+
+button:hover{
+
+    background:#990000;
+}

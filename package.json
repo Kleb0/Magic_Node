@@ -1,0 +1,37 @@
+{
+  "name": "Magic_Node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build" : "electron-builder",
+    "dev": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^7.3.6"
+  },
+
+  "build": {
+    "appId": "com.magicnode.app",
+    "productName": "Magic Node",
+    "directories": {
+        "output": "dist"
+    },
+    "files": [
+        "src/**/*",
+        "renderer/**/*",
+        "package.json"
+    ],
+    "win": {
+        "target": "nsis"
+    }
+}
+}
