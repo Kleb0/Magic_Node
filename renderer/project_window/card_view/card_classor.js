@@ -2,7 +2,7 @@ const cardBoard = document.getElementById("card-board");
 
 
 window.addEventListener("message", async (event) => {
-  
+ 
   if (event.data.type !== "folder-selected"){
     return;
   }

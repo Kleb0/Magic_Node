@@ -61,6 +61,15 @@ function clearSelection(){
   deleteFolderButton.classList.add("hidden")
   renameFolderButton.classList.add("hidden")
 
+  cardView.contentWindow.postMessage(
+    {
+      type:"folder-selected",
+      name: projectName,
+      path: projectPath
+    },
+    "*"
+  );
+
 }
 
 folderTreePanel.addEventListener("mouseenter", () => {
