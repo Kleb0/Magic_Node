@@ -272,3 +272,26 @@ ipcMain.handle("move-card", async (event, cardPath, targetFolderPath) => {
   }
 
 });
+
+ipcMain.handle("get-folder-cards", async (event, folderPath) => {
+
+  try {
+
+    const cards = await cardManager.getCards(folderPath);
+
+    return {
+      success:true,
+      cards
+    };
+
+  } catch (error) {
+  
+    return {
+      success:false,
+      message:error.message
+    }
+
+  };
+
+
+});

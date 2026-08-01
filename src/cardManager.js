@@ -44,12 +44,31 @@ async function moveCard(cardPath, targetFolderPath) {
 
 }
 
+async function getCards(folderPath) {
+  
+  const entries = await fs.readdir(folderPath, {
+    withFileTypes: true
+  });
+
+  return entries
+    .filter(entry => entry.isFile())
+    .filter(entry => path.extname(entry.name) === ".json")
+    .map(entry => ({
+
+      name: path.basename(entry.name, ".json"),
+      path: path.join(folderPath, entry.name),
+
+    }));
+
+}
+
 
 module.exports = {
     createCard,
     renameCard,
     deleteCard,
-    moveCard
+    moveCard,
+    getCards
 };
 
 

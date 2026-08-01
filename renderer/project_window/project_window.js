@@ -10,9 +10,11 @@ document.querySelector("h1").textContent =  projectName;
 
 let folders = [];
 
+const cardArea = document.getElementById("card-area");
+const cardView = document.getElementById("card-view");
+
 const tree = document.getElementById("folder-tree");
 const folderTreePanel = document.getElementById("folder-tree-panel");
-const cardArea = document.getElementById("card-area");
 
 const content = document.getElementById("project-content");
 
@@ -42,6 +44,7 @@ let dragStartPosition = null;
 let dropOnProjectRoot = false;
 let targetFolder = null;
 let isDragging = false;
+
 
 function clearSelection(){
 
@@ -280,6 +283,16 @@ function displayItems(items, parentElement = tree, level = 0) {
       deleteFolderButton.classList.remove("hidden");
       renameFolderButton.classList.remove("hidden");
 
+      cardView.contentWindow.postMessage(
+        {
+          type: "folder-selected",
+          name: item.name,
+          path: item.path
+        },
+        "*"
+      );
+
+    // end of function
     });
 
     function handleFolderMouseDown(event) {
@@ -565,6 +578,9 @@ deleteFolderButton.addEventListener("click", async () => {
 async function refreshFolderTree() {
 
   folders = await window.electronAPI.getProjectFolders(projectPath);
+
+  console.log(folders);
+  console.log("test refresh folder");
 
   tree.innerHTML = "";
 
