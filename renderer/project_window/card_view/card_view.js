@@ -5,6 +5,9 @@ const cardImagePlaceholder = document.getElementById("card-image-placeholder");
 const cardDescription = document.getElementById("card-description");
 
 let currentCard = null;
+const openWikiButton = document.getElementById("open-wiki-button");
+
+console.log("test openWikiButton : " + openWikiButton);
 
 function displayCard(card) {
   currentCard = card;
@@ -26,6 +29,14 @@ function displayImage(imageUrl){
   cardImagePlaceholder.style.display = "none";
 }
 
+function clearImage() {
+
+  cardImage.removeAttribute("src");
+  cardImage.style.display = "none";
+  cardImagePlaceholder.style.display = "block";
+
+}
+
 window.addEventListener("message", event => {
   
   if(event.data.type ==="display-card") {
@@ -38,6 +49,7 @@ window.addEventListener("message", event => {
 });
 
 cardImageZone.addEventListener("click", () => {
+
   if(!currentCard) {
     return;
   }
@@ -46,4 +58,15 @@ cardImageZone.addEventListener("click", () => {
     type:"select-card-image",
     cardPath: currentCard.path
   }, "*");
+});
+
+openWikiButton.addEventListener("click", () => {
+ 
+
+  if(!currentCard){
+    return;
+  }
+
+  window.parent.postMessage({type: "open-wiki", card: currentCard},"*");
+
 });

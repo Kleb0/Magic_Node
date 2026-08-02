@@ -4,6 +4,7 @@ let currentProjectPath = null;
 
 window.addEventListener("message", async event => {
 
+
   if (event.data.type === "folder-selected"){
     await displayFolderCards(
       event.data.path,
@@ -76,3 +77,15 @@ function createCardFrame(card) {
   cardBoard.appendChild(frame);
 
 }
+
+window.addEventListener("message", event => {
+
+  if (event.data.type !== "open-wiki"){
+    return;
+  }
+
+  console.log(" CARD-CLASSOR -> PROJECT-WINDOW");
+
+  window.parent.postMessage(event.data,"*");
+
+})

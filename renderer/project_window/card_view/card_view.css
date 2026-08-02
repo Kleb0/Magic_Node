@@ -38,13 +38,19 @@ body {
 }
 
 #card-title {
+  flex: 1;
   margin: 0;
-  width: 100%;
   font-size: 15px;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+#open-wiki-button{
+    width:28px;
+    height:28px;
+    flex-shrink:0;
+    cursor:pointer;
 }
 
 .card-image-zone {

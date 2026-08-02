@@ -277,23 +277,29 @@ ipcMain.handle("move-card", async (event, cardPath, targetFolderPath) => {
 ipcMain.handle("get-folder-cards", async (event, folderPath, projectPath) => {
 
   try {
-
     const cards = await cardManager.getCards(folderPath, projectPath);
 
+    const formattedCards = cards.map(card => ({
+
+      ...card,
+
+      imageUrl: card.imagePath ? pathToFileURL(card.imagePath).href : null
+
+
+    }));
+
     return {
-      success:true,
-      cards
+      success: true,
+      cards: formattedCards
     };
-
   } catch (error) {
-  
-    return {
-      success:false,
-      message:error.message
-    }
-
-  };
-});
+      return {
+        success: false,
+        message: error.message
+    };
+  }
+ }
+);
 
 ipcMain.handle("select-card-image", async (event, cardPath, projectPath) => {
 

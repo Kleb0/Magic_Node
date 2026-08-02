@@ -12,6 +12,7 @@ let folders = [];
 
 const cardArea = document.getElementById("card-area");
 const cardView = document.getElementById("card-view");
+let currentFolderDisplayed = {path: projectPath, name: projectName};
 
 const tree = document.getElementById("folder-tree");
 const folderTreePanel = document.getElementById("folder-tree-panel");
@@ -61,6 +62,10 @@ function clearSelection(){
   deleteFolderButton.classList.add("hidden")
   renameFolderButton.classList.add("hidden")
 
+  currentFolderDisplayed = {
+    path: projectPath,
+    name: projectName
+  };
   cardView.contentWindow.postMessage(
     {
       type:"folder-selected",
@@ -159,6 +164,52 @@ document.addEventListener("click", (event) => {
   clearSelection();
 
 });
+
+
+window.addEventListener("message", event => {
+
+  console.log("PROJECT WINDOW :", event.data);
+
+  if(event.data.type === "open-wiki") {
+
+    const card = event.data.card;
+
+    selectedFolderName.textContent = card.name;
+
+    cardView.src = "../Wiki_page/wiki_view.html";
+
+    cardView.onload = () => {
+
+      cardView.contentWindow.postMessage({
+        type: "display-card",
+        card
+      }, "*");
+    };
+
+    return; 
+  }
+
+  if(event.data.type === "close-wiki"){
+
+    selectedFolderName.textContent = currentFolderDisplayed.name;
+   
+    cardView.src = "card_view/card_classor.html";   
+    
+    cardView.onload = () => {
+
+      cardView.contentWindow.postMessage({
+       type:"folder-selected",
+        name: currentFolderDisplayed.name,
+        path: currentFolderDisplayed.path,
+        projectPath
+      },"*");
+    };
+  }
+});
+
+
+
+
 
 function displayItems(items, parentElement = tree, level = 0) {
 
@@ -283,6 +334,8 @@ function displayItems(items, parentElement = tree, level = 0) {
       folderRow.classList.add("selected");
 
       selectedItem = item;
+
+      currentFolderDisplayed = {path: item.path, name: item.name};
 
       selectedFolderName.textContent = item.name;
 
