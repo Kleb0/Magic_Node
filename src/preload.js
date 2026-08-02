@@ -30,7 +30,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     moveCard : (cardPath, targetFolderPath) => ipcRenderer.invoke("move-card", cardPath, targetFolderPath),
 
-    getFolderCards: (folderPath) => ipcRenderer.invoke("get-folder-cards", folderPath),
+    getFolderCards: (folderPath, projectPath) => ipcRenderer.invoke("get-folder-cards", folderPath, projectPath),
+
+    selectCardImage: (cardPath, projectPath) => ipcRenderer.invoke("select-card-image", cardPath, projectPath),
 
 });
 

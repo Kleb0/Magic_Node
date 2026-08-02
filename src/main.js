@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { pathToFileURL } = require("url");
 const projectManager = require("./projectManager.js");
 const cardManager = require("./cardManager.js");
 
@@ -273,11 +274,11 @@ ipcMain.handle("move-card", async (event, cardPath, targetFolderPath) => {
 
 });
 
-ipcMain.handle("get-folder-cards", async (event, folderPath) => {
+ipcMain.handle("get-folder-cards", async (event, folderPath, projectPath) => {
 
   try {
 
-    const cards = await cardManager.getCards(folderPath);
+    const cards = await cardManager.getCards(folderPath, projectPath);
 
     return {
       success:true,
@@ -292,6 +293,62 @@ ipcMain.handle("get-folder-cards", async (event, folderPath) => {
     }
 
   };
+});
+
+ipcMain.handle("select-card-image", async (event, cardPath, projectPath) => {
+
+  try {
+    const result = await dialog.showOpenDialog({
+
+      title: "Select image",
+      defaultPath : projectPath,
+
+      properties: [
+        "openFile"
+      ],
+
+      filters:[
+        {
+          name:"Images",
+          extensions:[
+            "png",
+            "jpg",
+            "jpeg",
+            "webp",
+            "gif",
+            "bmp"
+          ]
+        }
+      ]
+    });
+
+    if (result.canceled) {
+      return {
+        success:true,
+        canceled:true
+      };
+    }
+    const imagePath = result.filePaths[0];
+
+    const relativeImagePath = await cardManager.setCardImage(
+      cardPath,
+      projectPath,
+      imagePath
+    );
+
+    return {
+      success: true,
+      canceled: false,
+      imageUrl: pathToFileURL(imagePath).href,
+      relativeImagePath
+    };
+      // end of try section
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message
+    };
+  }
 
 
 });

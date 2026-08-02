@@ -65,7 +65,8 @@ function clearSelection(){
     {
       type:"folder-selected",
       name: projectName,
-      path: projectPath
+      path: projectPath,
+      projectPath
     },
     "*"
   );
@@ -296,7 +297,8 @@ function displayItems(items, parentElement = tree, level = 0) {
         {
           type: "folder-selected",
           name: item.name,
-          path: item.path
+          path: item.path,
+          projectPath
         },
         "*"
       );

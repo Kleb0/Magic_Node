@@ -10,7 +10,9 @@ async function createCard(folderPath, cardName){
     name: cardName,
     type: "card",
     content: "",
-    metadata: {},
+    metadata: {
+      imagePath:null
+    },
     links : []
   }
 
@@ -44,22 +46,69 @@ async function moveCard(cardPath, targetFolderPath) {
 
 }
 
-async function getCards(folderPath) {
+async function getCards(folderPath, projectPath) {
   
   const entries = await fs.readdir(folderPath, {
     withFileTypes: true
   });
 
-  return entries
-    .filter(entry => entry.isFile())
-    .filter(entry => path.extname(entry.name) === ".json")
-    .map(entry => ({
+  const cards = [];
+  
+  for (const entry of entries){
+    if (!entry.isFile() || path.extname(entry.name) !== ".json"){
+      continue;
+    }
 
-      name: path.basename(entry.name, ".json"),
-      path: path.join(folderPath, entry.name),
+    const cardPath = path.join(folderPath, entry.name);
 
-    }));
+    const content = await fs.readFile(cardPath, "utf-8");
 
+    const card = JSON.parse(content);
+
+    let imagePath = null;
+
+    if (card.metadata.imagePath) {
+      imagePath = path.join(projectPath, card.metadata.imagePath);
+    }
+
+    cards.push({
+      name: card.name,
+      path: cardPath,
+      type: card.type,
+      content: card.content,
+      metadata: card.metadata,
+      links: card.links,
+      imagePath
+    });
+  }
+  
+  return cards;
+
+}
+
+async function setCardImage(cardPath, projectPath, imagePath) {
+
+  const relativeImagePath = path.relative(
+    projectPath,
+    imagePath
+  );
+
+  if (relativeImagePath.startsWith("..") || path.isAbsolute(relativeImagePath)) {
+    throw new Error(
+      "Image must be inside inside the project."
+    );
+  }
+
+  const content = await fs.readFile(cardPath, "utf-8");
+
+  const card = JSON.parse(content);
+
+  card.metadata.imagePath = relativeImagePath;
+
+  await fs.writeFile(cardPath, JSON.stringify(card, null, 2), "utf-8");
+
+  return relativeImagePath; 
+  
 }
 
 
@@ -68,6 +117,7 @@ module.exports = {
     renameCard,
     deleteCard,
     moveCard,
+    setCardImage,
     getCards
 };
 
