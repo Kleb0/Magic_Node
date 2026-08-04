@@ -66,15 +66,21 @@ function clearSelection(){
     path: projectPath,
     name: projectName
   };
-  cardView.contentWindow.postMessage(
+
+  cardView.src = "card_view/card_classor.html";
+
+  cardView.onload = () => {
+   cardView.contentWindow.postMessage(
     {
       type:"folder-selected",
       name: projectName,
       path: projectPath,
       projectPath
-    },
-    "*"
-  );
+     },
+     "*"
+    );
+
+  };
 
 }
 
@@ -168,8 +174,6 @@ document.addEventListener("click", (event) => {
 
 window.addEventListener("message", event => {
 
-  console.log("PROJECT WINDOW :", event.data);
-
   if(event.data.type === "open-wiki") {
 
     const card = event.data.card;
@@ -200,7 +204,7 @@ window.addEventListener("message", event => {
       cardView.contentWindow.postMessage({
        type:"folder-selected",
         name: currentFolderDisplayed.name,
-        path: currentFolderDisplayed.path,
+        path: currentFolderDisplayed.Path,
         projectPath
       },"*");
     };
@@ -224,7 +228,7 @@ function displayItems(items, parentElement = tree, level = 0) {
 
       cardRow.textContent = item.name + " 📄 ";
 
-      cardRow.addEventListener("click", () => {
+      cardRow.addEventListener("click", async () => {
 
         document.querySelectorAll(".folder-item").forEach(element => element.classList.remove("selected")); 
 
@@ -235,6 +239,25 @@ function displayItems(items, parentElement = tree, level = 0) {
         selectedFolderName.textContent = item.name;
 
         document.getElementById("selected-folder-header").classList.remove("hidden");
+
+        // ---------- 
+        const result = await window.electronAPI.getBigCard(item.path, projectPath);
+
+        if(!result.success){
+          alert(result.message);
+          return;
+        }
+
+        cardView.src = "card_view/big_Card.html";
+
+        cardView.onload = () => {
+
+          cardView.contentWindow.postMessage({
+            type:"display-card",
+            card: result.card
+          },"*");
+        };
+ 
 
 
       })
@@ -346,7 +369,11 @@ function displayItems(items, parentElement = tree, level = 0) {
       deleteFolderButton.classList.remove("hidden");
       renameFolderButton.classList.remove("hidden");
 
-      cardView.contentWindow.postMessage(
+      cardView.src = "card_view/card_classor.html";
+
+      cardView.onload = () => {
+
+        cardView.contentWindow.postMessage(
         {
           type: "folder-selected",
           name: item.name,
@@ -355,6 +382,12 @@ function displayItems(items, parentElement = tree, level = 0) {
         },
         "*"
       );
+
+
+      }
+
+
+      
 
     // end of function
     });

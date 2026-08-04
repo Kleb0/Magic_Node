@@ -111,6 +111,35 @@ async function setCardImage(cardPath, projectPath, imagePath) {
   
 }
 
+async function getBigCard(cardPath, projectPath) {
+
+  const content = await fs.readFile(cardPath, "utf-8");
+
+  const card = JSON.parse(content);
+
+  let imagePath = null;
+
+  if(card.metadata.imagePath){
+    imagePath = path.join(
+      projectPath,
+      card.metadata.imagePath
+    );
+  }
+
+  return {
+    name: card.name,
+    path: cardPath,
+    projectPath,
+    type: card.type,
+    content: card.content,
+    metadata: card.metadata,
+    links: card.links,
+    imagePath
+  };
+
+
+}
+
 
 module.exports = {
     createCard,
@@ -118,7 +147,8 @@ module.exports = {
     deleteCard,
     moveCard,
     setCardImage,
-    getCards
+    getCards,
+    getBigCard
 };
 
 

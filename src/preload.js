@@ -34,6 +34,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     selectCardImage: (cardPath, projectPath) => ipcRenderer.invoke("select-card-image", cardPath, projectPath),
 
+    getBigCard:(cardPath, projectPath) => ipcRenderer.invoke("get-big-card", cardPath, projectPath),
+
 });
 
 

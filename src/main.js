@@ -355,6 +355,27 @@ ipcMain.handle("select-card-image", async (event, cardPath, projectPath) => {
       message: error.message
     };
   }
-
-
+  //end of select card image ipc func
 });
+
+ipcMain.handle("get-big-card", async (event, cardPath, projectPath) => {
+
+  try{
+    const card = await cardManager.getBigCard(cardPath, projectPath);
+
+    return{
+      success:true,
+      card:{
+        ...card,
+        imageUrl: card.imagePath ? pathToFileURL(card.imagePath).href : null
+      }
+    };
+  } catch (error) {
+      return{
+      success:false,
+      message:error.message
+    };
+  }
+});
+
+
