@@ -735,14 +735,61 @@ function expandParents(card){
 
 async function refreshFolderTree() {
 
-  folders = await window.electronAPI.getProjectFolders(projectPath);
+  const selectedPath = selectedItem?.path ?? null;
 
-  console.log(folders);
-  console.log("test refresh folder");
+  const expandedFolderPaths = getAllItems(folders)
+    .filter(item => 
+      item.type === "folder" &&
+      item.childrenContainer && 
+      !item.childrenContainer.classList.contains("hidden")
+    ).map(item => item.path);
+
+  folders = await window.electronAPI.getProjectFolders(projectPath);
 
   tree.innerHTML = "";
 
   displayItems(folders);
+
+  const allItems = getAllItems(folders);
+
+  const restoredItem = allItems.find(item => item.path === selectedPath);
+
+  for(const folderPath of expandedFolderPaths) {
+    
+    const folder = allItems.find(item => 
+      item.type === "folder" &&
+      item.path === folderPath
+    );
+
+    if(!folder){
+      continue;
+    }
+
+    folder.childrenContainer.classList.remove("hidden");
+    folder.toggleButton.textContent = "-";  
+  };
+
+  if(!selectedPath){return;}
+
+  if(!restoredItem){return;}
+
+  selectedItem = restoredItem;
+  restoredItem.row.classList.add("selected");
+
+  if(restoredItem.type === "folder"){
+    currentFolderDisplayed = { path: restoredItem.path, name : restoredItem.name };
+  }
+
+  expandParents(restoredItem);
+
+  if (restoredItem.type === "folder" && cardView.src.endsWith("card_view/card_classor.html")) {
+    cardView.contentWindow.postMessage({
+      type: "folder-selected",
+      name: restoredItem.name,
+      path: restoredItem.path,
+      projectPath
+    }, "*");
+  }
 }
 
 export {
