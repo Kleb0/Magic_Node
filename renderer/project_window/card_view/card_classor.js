@@ -80,7 +80,7 @@ function createCardFrame(card) {
 
 window.addEventListener("message", event => {
 
-  if (event.data.type !== "open-wiki"){
+  if (event.data.type !== "open-wiki" && event.data.type !== "open-big-card"){
     return;
   }
 

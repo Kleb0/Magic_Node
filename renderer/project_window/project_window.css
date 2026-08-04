@@ -315,11 +315,8 @@ body{
 
 #card-area:hover{
 
-    background:rgba(214,139,42,.10);
     border-color:#d68b2a;
     box-shadow:0 0 10px rgba(214,139,42,.25);
-    cursor:pointer;
-
 }
 
 #card-view{

@@ -67,21 +67,21 @@ function clearSelection(){
     name: projectName
   };
 
-  cardView.src = "card_view/card_classor.html";
-
-  cardView.onload = () => {
-   cardView.contentWindow.postMessage(
-    {
-      type:"folder-selected",
-      name: projectName,
-      path: projectPath,
-      projectPath
-     },
-     "*"
-    );
-
+  const message = {
+    type: "folder-selected",
+    name : item.name,
+    path: item.path,
+    projectPath
   };
 
+  if (!cardView.src.endsWith("card_view/card_classor.html")) {
+    
+    cardView.src = "card_view/card_classor.html";
+    
+    cardView.onload = () => { cardView.contentWindow.postMessage(message, "*"); };
+  } else {
+    cardView.contentWindow.postMessage(message, "*");
+  }
 }
 
 folderTreePanel.addEventListener("mouseenter", () => {
@@ -153,26 +153,38 @@ folderTreePanel.addEventListener("contextmenu", (event) => {
 
 });
 
-document.addEventListener("click", (event) => {
-
-  if(folderTreePanel.contains(event.target)){
-      return;
-  }
-
-  if(cardModal.contains(event.target)){
-    return;
-  }
-
-  if (contextMenu.contains(event.target)){
-    return;
-  }
-
-  clearSelection();
-
-});
-
 
 window.addEventListener("message", event => {
+
+   if(event.data.type === "open-big-card"){
+    
+    const card = event.data.card;
+
+    document.querySelectorAll(".folder-item").forEach(element => {element.classList.remove("selected");});
+
+    const cardRow = getAllItems(folders).find(item => item.type === "card" && item.path === card.path);
+
+    if(cardRow) {
+      cardRow.row.classList.add("selected");
+      selectedItem = cardRow;
+      expandParents(cardRow);
+    }
+
+    selectedFolderName.textContent = card.name;
+
+    cardView.src = "card_view/big_card.html";
+
+    cardView.onload = () => {
+
+      cardView.contentWindow.postMessage({type:"display-card", card }, "*");
+
+
+    };
+
+    return;
+  }
+
+
 
   if(event.data.type === "open-wiki") {
 
@@ -215,15 +227,20 @@ window.addEventListener("message", event => {
 
 
 
-function displayItems(items, parentElement = tree, level = 0) {
+function displayItems(items, parentElement = tree, level = 0, parent = null)  {
 
   items.forEach(item => {
+
+    item.parent = parent; 
 
     if (item.type === "card") {
 
       const cardRow = document.createElement("div");
 
       cardRow.className = "folder-item";
+      
+      item.row = cardRow;
+    
       cardRow.style.paddingLeft = `${10 + level * 20}px`;
 
       cardRow.textContent = item.name + " 📄 ";
@@ -287,12 +304,15 @@ function displayItems(items, parentElement = tree, level = 0) {
     const folderContainer = document.createElement("div");
 
     const folderRow = document.createElement("div");
+
+
     item.row = folderRow;
 
     folderRow.className = "folder-item";
     folderRow.style.paddingLeft = `${10 + level * 20}px`;
 
     const toggleButton = document.createElement("button");
+    item.toggleButton = toggleButton;
 
     toggleButton.type = "button";
     toggleButton.style.width = "24px";
@@ -307,6 +327,8 @@ function displayItems(items, parentElement = tree, level = 0) {
     folderName.textContent = item.name;
 
     const childrenContainer = document.createElement("div");
+
+    item.childrenContainer = childrenContainer;
 
     console.log(item);
     const hasChildren = item.children.length > 0;
@@ -368,28 +390,29 @@ function displayItems(items, parentElement = tree, level = 0) {
 
       deleteFolderButton.classList.remove("hidden");
       renameFolderButton.classList.remove("hidden");
+      // -----------
+      
+      const message = {
+        type: "folder-selected",
+        name: item.name,
+        path: item.path,
+        projectPath
+      };
 
-      cardView.src = "card_view/card_classor.html";
+      if (!cardView.src.endsWith("card_view/card_classor.html")) {
+          
+        cardView.src = "card_view/card_classor.html";
 
-      cardView.onload = () => {
+        cardView.onload = () => { cardView.contentWindow.postMessage(message, "*");};
 
-        cardView.contentWindow.postMessage(
-        {
-          type: "folder-selected",
-          name: item.name,
-          path: item.path,
-          projectPath
-        },
-        "*"
-      );
-
-
+      } else {
+        
+        cardView.contentWindow.postMessage(message, "*");
       }
 
+  
 
-      
-
-    // end of function
+    // end of function displayitems
     });
 
     function handleFolderMouseDown(event) {
@@ -457,7 +480,8 @@ function displayItems(items, parentElement = tree, level = 0) {
       displayItems(
         item.children,
         childrenContainer,
-        level + 1
+        level + 1,
+        item
       );
 
     }
@@ -671,6 +695,43 @@ deleteFolderButton.addEventListener("click", async () => {
   await refreshFolderTree();
 
 });
+
+function getAllItems(items){
+
+  let result = [];
+
+  for(const item of items){
+
+    result.push(item);
+
+    if(item.children){
+      result.push(...getAllItems(item.children));
+    }
+
+  }
+
+  return result;
+
+}
+
+function expandParents(card){
+
+  let current = card.parent;
+
+  while(current){
+
+    if(current.childrenContainer){
+      current.childrenContainer.classList.remove("hidden");
+    }
+
+    if(current.toggleButton){
+      current.toggleButton.textContent = "-";
+    }
+
+    current = current.parent;
+  }
+
+}
 
 async function refreshFolderTree() {
 
