@@ -1,4 +1,5 @@
 import { initializeCardManager } from "./card_manager.js";
+import magicNav from "../../module/Magic_nav/magic_nav_main.js";
 
 const params = new URLSearchParams(window.location.search);
 
@@ -11,7 +12,9 @@ document.querySelector("h1").textContent =  projectName;
 let folders = [];
 
 const cardArea = document.getElementById("card-area");
+
 const cardView = document.getElementById("card-view");
+
 let currentFolderDisplayed = {path: projectPath, name: projectName};
 
 const tree = document.getElementById("folder-tree");
@@ -46,6 +49,25 @@ let dropOnProjectRoot = false;
 let targetFolder = null;
 let isDragging = false;
 
+function projectViewRegistration(){
+    
+  magicNav.registerView("card-classor", {
+    path: "card_view/card_classor.html"
+  });
+
+  magicNav.registerView("big-card", {
+    path: "card_view/big_card.html"   
+  });
+
+  magicNav.registerView("wiki", {
+    path:"../Wiki_page/wiki_view.html"
+  });
+
+}
+
+magicNav.initialize(cardView);
+projectViewRegistration();
+
 
 function clearSelection(){
 
@@ -76,7 +98,7 @@ function clearSelection(){
 
   if (!cardView.src.endsWith("card_view/card_classor.html")) {
     
-    cardView.src = "card_view/card_classor.html";
+    magicNav.openView("card-classor");
     
     cardView.onload = () => { cardView.contentWindow.postMessage(message, "*"); };
   } else {
@@ -175,7 +197,7 @@ window.addEventListener("message", event => {
 
     selectedFolderName.textContent = card.name;
 
-    cardView.src = "card_view/big_card.html";
+    magicNav.openView("big-card");
 
     cardView.onload = () => {
 
@@ -191,7 +213,7 @@ window.addEventListener("message", event => {
 
     selectedFolderName.textContent = card.name;
 
-    cardView.src = "../Wiki_page/wiki_view.html";
+    magicNav.openView("wiki");
 
     cardView.onload = () => {
 
@@ -208,7 +230,7 @@ window.addEventListener("message", event => {
 
     selectedFolderName.textContent = currentFolderDisplayed.name;
    
-    cardView.src = "card_view/card_classor.html";   
+    magicNav.openView("card-classor");  
     
     cardView.onload = () => {
 
@@ -238,7 +260,7 @@ window. addEventListener("card-deleted", event => {
 
   selectedFolderName.textContent = parentFolder.name;
 
-  cardView.src = "card_view/card_classor.html";
+  magicNav.openView("card-classor");
 
   cardView.onload = () => {
     cardView.contentWindow.postMessage({
@@ -293,7 +315,7 @@ function displayItems(items, parentElement = tree, level = 0, parent = null)  {
           return;
         }
 
-        cardView.src = "card_view/big_Card.html";
+        magicNav.openView("big-card"); 
 
         cardView.onload = () => {
 
@@ -429,7 +451,7 @@ function displayItems(items, parentElement = tree, level = 0, parent = null)  {
 
       if (!cardView.src.endsWith("card_view/card_classor.html")) {
           
-        cardView.src = "card_view/card_classor.html";
+        magicNav.openView("card-classor");
 
         cardView.onload = () => { cardView.contentWindow.postMessage(message, "*");};
 

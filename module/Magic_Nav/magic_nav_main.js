@@ -1,10 +1,38 @@
+import hierarchy from "./hierarchy.js";
+
 class MagicNav {
 
   constructor(){
+    
+    if(MagicNav.instance) {
+      return MagicNav.instance;
+    }
+
     this.views = new Map();
 
     this.currentView = null;
 
+    MagicNav.instance = this; 
+
+
+  }
+
+  initialize(container) {
+
+    this.container = container;
+
+  }
+
+  openView(viewId){
+    
+    const view = this.getView(viewId);
+
+    if(!view) {
+      throw new Error(`Magic_Nav : Unknown view "${viewId}". `);
+    }
+    
+    this.container.src = view.path;
+    this.currentView = viewId;
   }
 
   registerView(viewId, config){
@@ -15,7 +43,7 @@ class MagicNav {
     this.views.set(viewId, config);
   }
 
-  getView(viewsId) {
+  getView(viewId) {
     return this.views.get(viewId);
   }
 
@@ -27,8 +55,20 @@ class MagicNav {
     return this.currentView;
   }
 
-  getCurrentView(viewsId) {
+  setCurrentView(viewId) {
     this.currentView = viewId;
+  }
+
+  setHierarchy(viewId, config) {
+    hierarchy.setHierarchy(viewId, config);
+  }
+
+  getParent(viewId){
+    return hierarchy.getParent(viewId);
+  }
+
+  getChildren(viewId){
+    return hierarchy.getChildren(viewId);
   }
 
   // end of class
