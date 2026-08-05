@@ -130,6 +130,12 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
 
     clearSelection();
 
+    window.dispatchEvent(new CustomEvent("card-deleted", {
+      detail: {
+        parentFolder : selectedItem.parent
+      }
+    }));
+
     await refreshFolderTree();
 
   })

@@ -69,8 +69,8 @@ function clearSelection(){
 
   const message = {
     type: "folder-selected",
-    name : item.name,
-    path: item.path,
+    name : projectName,
+    path: projectPath,
     projectPath
   };
 
@@ -184,8 +184,6 @@ window.addEventListener("message", event => {
     return;
   }
 
-
-
   if(event.data.type === "open-wiki") {
 
     const card = event.data.card;
@@ -222,6 +220,29 @@ window.addEventListener("message", event => {
     };
   }
 });
+
+window. addEventListener("card-deleted", event => { 
+
+ const parentFolder = event.detail.parentFolder;
+
+  selectedItem = parentFolder;
+
+  currentFolderDisplayed = {path: parentFolder.path, name: parentFolder.name };
+
+  selectedFolderName.textContent = parentFolder.name;
+
+  cardView.src = "card_view/card_classor.html";
+
+  cardView.onload = () => {
+    cardView.contentWindow.postMessage({
+      type: "folder-selected",
+      name: parentFolder.name,
+      path: parentFolder.path,
+      projectPath
+    }, "*");
+  };
+});
+
 
 
 
@@ -688,11 +709,19 @@ deleteFolderButton.addEventListener("click", async () => {
     return;
   }
 
-  selectedFolderName.textContent ="";
-  deleteFolderButton.classList.add("hidden");
-  selectedItem = null;
-
+  clearSelection();
+ 
   await refreshFolderTree();
+
+  if (selectedItem && selectedItem.type === "folder" && cardView.src.endsWith("card_view/card_classor.html")){
+
+    cardView.contentWindow.postMessage({
+      type: "folder-selected",
+      name: selectedItem.name,
+      path: selectedItem.path,
+      projectPath
+    }, "*");
+  }
 
 });
 
