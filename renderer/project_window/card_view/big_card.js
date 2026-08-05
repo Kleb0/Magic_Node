@@ -60,8 +60,11 @@ cardImageZone.addEventListener("click", async () => {
     return;
   }
 
+  console.log("dialogue image card zone before")
+
   const result = await window.parent.electronAPI.selectCardImage(currentCard.path, currentCard.projectPath);
 
+  console.log("dialogue image card zone after ")
   if(!result.success || result.canceled) {
     return;
   }

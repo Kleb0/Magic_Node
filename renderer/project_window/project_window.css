@@ -345,3 +345,14 @@ body{
     display:none;
 
 }
+
+body.modal-open #card-view{
+    pointer-events:none;
+}
+
+#context-menu,
+#card-modal{
+    position:fixed;
+    z-index:100000;
+    pointer-events:auto;
+}

@@ -121,6 +121,9 @@ folderTreePanel.addEventListener("contextmenu", (event) => {
   
   event.preventDefault();
 
+  cardModal.classList.add("hidden");
+  document.body.classList.add("modal-open");
+
   if (event.button !== 2){
     return;
   }
@@ -177,8 +180,6 @@ window.addEventListener("message", event => {
     cardView.onload = () => {
 
       cardView.contentWindow.postMessage({type:"display-card", card }, "*");
-
-
     };
 
     return;
@@ -214,7 +215,7 @@ window.addEventListener("message", event => {
       cardView.contentWindow.postMessage({
        type:"folder-selected",
         name: currentFolderDisplayed.name,
-        path: currentFolderDisplayed.Path,
+        path: currentFolderDisplayed.path,
         projectPath
       },"*");
     };
@@ -223,9 +224,15 @@ window.addEventListener("message", event => {
 
 window. addEventListener("card-deleted", event => { 
 
- const parentFolder = event.detail.parentFolder;
+  const parentFolder = event.detail.parentFolder;
+
+  document.querySelectorAll(".folder-item").forEach(element => {element.classList.remove("selected")});
 
   selectedItem = parentFolder;
+
+  const folderRow = getAllItems(folders).find(item => item.type === "folder" && item.path === parentFolder.path);
+
+  if(folderRow){folderRow.row.classList.add("selected");}
 
   currentFolderDisplayed = {path: parentFolder.path, name: parentFolder.name };
 
@@ -603,6 +610,10 @@ document.addEventListener("click", (event) => {
   }
 
   contextMenu.classList.add("hidden");
+
+  if(cardModal.classList.contains("hidden")){
+    document.body.classList.remove("modal-open");
+  }
 });
 
 createFolderButton.addEventListener("click", async () => {

@@ -23,6 +23,9 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
     cardModal.style.left = `${event.pageX}px`;
     cardModal.style.top = `${event.pageY}px`;
     newCardName.value = "";
+    contextMenu.classList.add("hidden");
+    document.body.classList.add("modal-open");
+
     cardModal.classList.remove("hidden");
     newCardName.focus();
 
@@ -40,6 +43,10 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
     }
 
     cardModal.classList.add("hidden");
+
+    if(contextMenu.classList.contains("hidden")){
+      document.body.classList.remove("modal-open");
+    }
 
   });
 
