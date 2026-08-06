@@ -1,4 +1,4 @@
-import hierarchy from "./hierarchy.js";
+import hierarchy from "./magic_nav_hierarchy.js";
 
 class MagicNav {
 
@@ -11,6 +11,8 @@ class MagicNav {
     this.views = new Map();
 
     this.currentView = null;
+    
+    this.isConfigured = false;
 
     MagicNav.instance = this; 
 
@@ -23,7 +25,26 @@ class MagicNav {
 
   }
 
+  configure(configurationFunction) {
+    if(typeof configurationFunction !== "function"){
+      throw new Error(
+        "Magic_Nav : configure() expects a configuration function"
+      );
+    }
+
+    configurationFunction();
+
+    this.isConfigured = true;
+
+  }
+
   openView(viewId){
+
+    if(!this.isConfigured) {
+      throw new Error(
+        "Magic_Nav : configureMagicNav() must be called before using Magic_Nav"
+      );
+    }
     
     const view = this.getView(viewId);
 

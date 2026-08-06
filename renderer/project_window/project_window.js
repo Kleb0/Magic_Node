@@ -1,5 +1,6 @@
 import { initializeCardManager } from "./card_manager.js";
-import magicNav from "../../module/Magic_nav/magic_nav_main.js";
+import { configureMagicNav } from "../configMagicNav/config_Magic_Nav.js";
+import magicNav from "../../module/Magic_Nav/magic_nav_main.js";
 
 const params = new URLSearchParams(window.location.search);
 
@@ -49,25 +50,11 @@ let dropOnProjectRoot = false;
 let targetFolder = null;
 let isDragging = false;
 
-function projectViewRegistration(){
-    
-  magicNav.registerView("card-classor", {
-    path: "card_view/card_classor.html"
-  });
 
-  magicNav.registerView("big-card", {
-    path: "card_view/big_card.html"   
-  });
-
-  magicNav.registerView("wiki", {
-    path:"../Wiki_page/wiki_view.html"
-  });
-
-}
 
 magicNav.initialize(cardView);
-projectViewRegistration();
 
+magicNav.configure(configureMagicNav);
 
 function clearSelection(){
 
@@ -155,6 +142,7 @@ folderTreePanel.addEventListener("contextmenu", (event) => {
   contextMenu.style.top = `${event.pageY}px`;
 
   contextMenu.classList.remove("hidden");
+  window.electronAPI.focusFix();
 
   folderContextMenu.classList.add("hidden");
   cardContextMenu.classList.add("hidden");
@@ -174,6 +162,7 @@ folderTreePanel.addEventListener("contextmenu", (event) => {
 
   newFolderName.value = "";
   newFolderName.focus();
+  window.electronAPI.focusFix();
 
 
 });
@@ -312,6 +301,7 @@ function displayItems(items, parentElement = tree, level = 0, parent = null)  {
 
         if(!result.success){
           alert(result.message);
+          window.electronAPI.focusFix();
           return;
         }
 
@@ -657,6 +647,7 @@ createFolderButton.addEventListener("click", async () => {
 
   if (!result.success) {
     alert(result.message);
+    window.electronAPI.focusFix();
     return;
   };
 
@@ -683,6 +674,7 @@ createFileButton.addEventListener("click", async () => {
 
   if(!result.success) {
     alert(result.message);
+    window.electronAPI.focusFix();
     return;
   }
 
@@ -713,6 +705,7 @@ renameFolderButton.addEventListener("click", async () => {
 
   if(!result.success){
     alert(result.message);
+    window.electronAPI.focusFix();
     return;
   }
 
@@ -721,12 +714,13 @@ renameFolderButton.addEventListener("click", async () => {
 });
 
 deleteFolderButton.addEventListener("click", async () => {
-  
+
   if(selectedItem === null){
     return;
   }
 
   const confirmed = confirm(`Delete folder "${selectedItem.name}"?`);
+  window.electronAPI.focusFix();
 
   if(!confirmed){
     return;
@@ -739,6 +733,7 @@ deleteFolderButton.addEventListener("click", async () => {
  
   if(!result.success){
     alert(result.message);
+    window.electronAPI.focusFix();
     return;
   }
 

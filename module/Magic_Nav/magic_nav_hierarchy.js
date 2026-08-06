@@ -4,9 +4,9 @@ class Hierarchy {
     this.views = new Map();
   }
 
-  set Hierarchy(viewId, config) {
+  setHierarchy(viewId, config) {
 
-     this.views.set(ViewId, {
+     this.views.set(viewId, {
        parent: config.parent ?? null,
        children: config.children ?? []
     }); 
@@ -19,7 +19,7 @@ class Hierarchy {
   getParent(viewId) {
     const hierarchy = this.views.get(viewId);
 
-    if(!Hierarchy) {
+    if(!hierarchy) {
       return null;
     }
 

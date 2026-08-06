@@ -6,8 +6,10 @@ const cardManager = require("./cardManager.js");
 const fs = require("fs/promises");
 const path = require("path");
 
+let mainWindow;
+
 function createWindow() {
-  const window = new BrowserWindow({
+    mainWindow = new BrowserWindow({
     width : 1280,
     height : 720,
     webPreferences: {
@@ -15,7 +17,7 @@ function createWindow() {
     }
   });
 
-  window.loadFile(path.join(__dirname, "../renderer/index.html"));
+  mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
 }
 
 app.whenReady().then(() => {
@@ -376,6 +378,17 @@ ipcMain.handle("get-big-card", async (event, cardPath, projectPath) => {
       message:error.message
     };
   }
+});
+
+ipcMain.on("focus-fix", () => {
+
+  if(!mainWindow || mainWindow.isDestroyed()) {
+    return;
+  }
+  
+  mainWindow.blur();
+  mainWindow.focus();
+
 });
 
 

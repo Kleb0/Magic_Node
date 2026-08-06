@@ -36,6 +36,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     getBigCard:(cardPath, projectPath) => ipcRenderer.invoke("get-big-card", cardPath, projectPath),
 
+    focusFix: () => ipcRenderer.send("focus-fix"),
+
 });
 
 
