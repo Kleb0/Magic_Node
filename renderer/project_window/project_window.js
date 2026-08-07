@@ -55,10 +55,6 @@ magicNav.initialize(cardView);
 
 magicNav.configure(configureMagicNav);
 
-await testAdress();
-
-
-
 
 function clearSelection(){
 
@@ -92,20 +88,32 @@ function clearSelection(){
     magicNav.openView("card-classor");
     
     cardView.onload = () => { 
-      magicNav.messages.folderSelected(
+        
+      magicNav.messages.emit(
+        window,
         cardView.contentWindow,
-        projectName,
-        projectPath,
-        projectPath
+        magicNav.messages.magicNavMessages.folderSelected(
+          projectName,
+          projectPath,
+          projectPath
+        )
       );
+
+
     };
   } else {
-    magic.messages.folderSelected(
-      cardView.contentWindow, 
-      projectName,
-      projectPath,
-      projectPath
-    ) 
+
+       magicNav.messages.emit(
+        window,
+        cardView.contentWindow,
+        magicNav.messages.magicNavMessages.folderSelected(
+          projectName,
+          projectPath,
+          projectPath
+        )
+      );
+
+
   }
 }
 
@@ -184,68 +192,87 @@ folderTreePanel.addEventListener("contextmenu", (event) => {
 });
 
 
-window.addEventListener("message", event => {
+magicNav.messages.receive(window, event => {
 
-   if(event.data.type === "open-big-card"){
-    
-    const card = event.data.card;
+  switch (event.data.type) {
 
-    document.querySelectorAll(".folder-item").forEach(element => {element.classList.remove("selected");});
+    case "open-big-card" : {
+      
+      const card = event.data.card;
+      
+      document.querySelectorAll(".folder-item").forEach(element => {
+        element.classList.remove("selected");
+      });
 
-    const cardRow = getAllItems(folders).find(item => item.type === "card" && item.path === card.path);
+      const cardRow = getAllItems(folders).find(item => 
+        item.type === "card" && item.path === card.path );
 
-    if(cardRow) {
-      cardRow.row.classList.add("selected");
-      selectedItem = cardRow;
-      expandParents(cardRow);
+      if (cardRow) {
+        cardRow.row.classList.add("selected");
+        selectedItem = cardRow;
+        expandParents(cardRow);
+      }
+
+      selectedFolderName.textContent = card.name;
+
+      magicNav.openView("big-card");
+
+      cardView.onload = () => {
+        
+        magicNav.messages.emit(
+          window,
+          cardView.contentWindow,
+          magicNav.messages.magicNavMessages.displayCard(card)
+        );
+
+      };
+
+      break;
     }
 
-    selectedFolderName.textContent = card.name;
+    case "open-wiki" : {
 
-    magicNav.openView("big-card");
+      const card = event.data.card;
 
-    cardView.onload = () => {
+      selectedFolderName.textContent = card.name;
 
-      magicNav.messages.dispayCard(cardview.contentWindow, card);
-    };
+      magicNav.openView("wiki");
 
-    return;
-  }
+      cardView.onload = () => {
 
-  if(event.data.type === "open-wiki") {
-
-    const card = event.data.card;
-
-    selectedFolderName.textContent = card.name;
-
-    magicNav.openView("wiki");
-
-    cardView.onload = () => {
-
-      magicNav.messages.display-card(cardView.contentWindow);
-
-    };
-
-    return; 
-  }
-
-  if(event.data.type === "close-wiki"){
-
-    selectedFolderName.textContent = currentFolderDisplayed.name;
-   
-    magicNav.openView("card-classor");  
-    
-    cardView.onload = () => {
-
-      magicNav.messages.folderSelected(
+        magicNav.messages.emit(
+        window,
         cardView.contentWindow,
-        currentFolderDisplayed.name,
-        currentFolderDisplayed.path,
-        projectPath
-      );
+        magicNav.messages.magicNavMessages.displayCard(card));
+    
+      };
 
+      break;
+    } 
 
-    };
+    case "close-wiki": {
+  
+      selectedFolderName.textContent = currentFolderDisplayed.name;
+
+      magicNav.openView("card-classor");
+
+      cardView.onload= () => {
+        
+        magicNav.messages.emit(
+           window,
+           cardView.contentWindow,
+           magicNav.messages.magicNavMessages.folderSelected(
+            currentFolderDisplayed.name,
+            currentFolderDisplayed.path,
+            projectPath
+          )
+        ); 
+  
+      };
+    
+      break;
+
+    }
   }
 });
 
@@ -268,12 +295,17 @@ window. addEventListener("card-deleted", event => {
   magicNav.openView("card-classor");
 
   cardView.onload = () => {
-    cardView.contentWindow.postMessage({
-      type: "folder-selected",
-      name: parentFolder.name,
-      path: parentFolder.path,
+
+    magicNav.messages.emit(
+      window,
+      cardView.contentWindow,
+      magicNav.messages.magicNavMessages.folderSelected(
+      parentFolder.name,
+      parentFolder.path,
       projectPath
-    }, "*");
+      )
+    );
+
   };
 });
 
@@ -459,14 +491,32 @@ function displayItems(items, parentElement = tree, level = 0, parent = null)  {
           
         magicNav.openView("card-classor");
 
-        cardView.onload = () => { cardView.contentWindow.postMessage(message, "*");};
+        cardView.onload = () => { 
+
+          magicNav.messages.emit(
+            window,
+            cardView.contentWindow,
+            magicNav.messages.magicNavMessages.folderSelected(
+            item.name,
+            item.path,
+            projectPath
+           )
+          );
+        };
 
       } else {
+       
+        magicNav.messages.emit(
+          window,
+          cardView.contentWindow,
+          magicNav.messages.magicNavMessages.folderSelected(
+          item.name,
+          item.path,
+          projectPath
+          )
+        );
         
-        cardView.contentWindow.postMessage(message, "*");
       }
-
-  
 
     // end of function displayitems
     });
@@ -856,12 +906,15 @@ async function refreshFolderTree() {
   expandParents(restoredItem);
 
   if (restoredItem.type === "folder" && cardView.src.endsWith("card_view/card_classor.html")) {
-    cardView.contentWindow.postMessage({
-      type: "folder-selected",
-      name: restoredItem.name,
-      path: restoredItem.path,
-      projectPath
-    }, "*");
+    magicNav.messages.emit(
+      window,
+      cardView.contentWindow,
+      magicNav.messages.magicNavMessages.folderSelected(
+        restoredItem.name,
+        restoredItem.path,
+        projectPath
+      )
+    );
   }
 }
 
