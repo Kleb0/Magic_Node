@@ -1,4 +1,5 @@
 const cardBoard = document.getElementById("card-board");
+import magicNav from "../../../module/Magic_Nav/magic_nav_main.js";
 
 let currentProjectPath = null;
 
@@ -67,25 +68,28 @@ function createCardFrame(card) {
   frame.className = "card-frame";
   frame.scrolling = "no";
 
+  
   frame.addEventListener("load", () => {
-    frame.contentWindow.postMessage({
-      type:"display-card",
-      card
-    }, "*");
+      magicNav.messages.emit
+      (window, 
+        frame.contentWindow, 
+        magicNav.messages.magicNavMessages.displayCard(card));
+
   });
 
   cardBoard.appendChild(frame);
 
 }
 
-window.addEventListener("message", event => {
+magicNav.messages.receive(window, event => {
 
-  if (event.data.type !== "open-wiki" && event.data.type !== "open-big-card"){
+  if(event.data.type !== "open-wiki" && event.data.type !== "open-big-card")
+  {
     return;
   }
 
-  console.log(" CARD-CLASSOR -> PROJECT-WINDOW");
+  console.log("[CARD_CLASSOR] emit : ", event.data.type); 
 
-  window.parent.postMessage(event.data,"*");
+  magicNav.messages.emit(window, window.parent, event.data);
 
 })

@@ -51,10 +51,14 @@ let targetFolder = null;
 let isDragging = false;
 
 
-
 magicNav.initialize(cardView);
 
 magicNav.configure(configureMagicNav);
+
+await testAdress();
+
+
+
 
 function clearSelection(){
 
@@ -87,9 +91,21 @@ function clearSelection(){
     
     magicNav.openView("card-classor");
     
-    cardView.onload = () => { cardView.contentWindow.postMessage(message, "*"); };
+    cardView.onload = () => { 
+      magicNav.messages.folderSelected(
+        cardView.contentWindow,
+        projectName,
+        projectPath,
+        projectPath
+      );
+    };
   } else {
-    cardView.contentWindow.postMessage(message, "*");
+    magic.messages.folderSelected(
+      cardView.contentWindow, 
+      projectName,
+      projectPath,
+      projectPath
+    ) 
   }
 }
 
@@ -190,7 +206,7 @@ window.addEventListener("message", event => {
 
     cardView.onload = () => {
 
-      cardView.contentWindow.postMessage({type:"display-card", card }, "*");
+      magicNav.messages.dispayCard(cardview.contentWindow, card);
     };
 
     return;
@@ -206,10 +222,8 @@ window.addEventListener("message", event => {
 
     cardView.onload = () => {
 
-      cardView.contentWindow.postMessage({
-        type: "display-card",
-        card
-      }, "*");
+      magicNav.messages.display-card(cardView.contentWindow);
+
     };
 
     return; 
@@ -223,12 +237,14 @@ window.addEventListener("message", event => {
     
     cardView.onload = () => {
 
-      cardView.contentWindow.postMessage({
-       type:"folder-selected",
-        name: currentFolderDisplayed.name,
-        path: currentFolderDisplayed.path,
+      magicNav.messages.folderSelected(
+        cardView.contentWindow,
+        currentFolderDisplayed.name,
+        currentFolderDisplayed.path,
         projectPath
-      },"*");
+      );
+
+
     };
   }
 });

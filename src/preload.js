@@ -2,6 +2,8 @@ const { contextBridge, ipcRenderer  } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
 
+    getNavigationStore: () => ipcRenderer.invoke("get-navigation-store"),  
+
     selectFolder: () => ipcRenderer.invoke("select-folder"),
  
     createProject: (parentFolder, projectName) => ipcRenderer.invoke("create-project", parentFolder, projectName),

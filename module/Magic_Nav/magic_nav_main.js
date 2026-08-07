@@ -1,4 +1,5 @@
 import hierarchy from "./magic_nav_hierarchy.js";
+import * as messageOperator from "./magic_nav_message_operator.js";
 
 class MagicNav {
 
@@ -13,6 +14,8 @@ class MagicNav {
     this.currentView = null;
     
     this.isConfigured = false;
+
+    this.messages = messageOperator;
 
     MagicNav.instance = this; 
 

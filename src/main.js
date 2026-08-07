@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const { pathToFileURL } = require("url");
+const navigationStore = require("./navigationStore.js");
 const projectManager = require("./projectManager.js");
 const cardManager = require("./cardManager.js");
 
@@ -20,7 +21,10 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+
+  await initializeNavigationStore();
+
   createWindow();
 
   app.on("activate", ()=> {
@@ -37,6 +41,57 @@ app.on("window-all-closed", ()=> {
     app.quit();
   }
 });
+
+async function findHtmlFiles(folderPath) {
+  
+  const htmlFiles = [];
+
+  const entries = await fs.readdir(folderPath, {
+    withFileTypes : true
+  });
+
+  for (const entry of entries) {
+    
+    const entryPath = path.join(folderPath, entry.name);
+
+    if (entry.isDirectory()) {
+      
+      const subHtmlFiles = await findHtmlFiles(entryPath);
+
+      htmlFiles.push(...subHtmlFiles);
+
+      continue;
+    }
+    
+    if(entry.isFile() && path.extname(entry.name) === ".html") {
+      
+      htmlFiles.push(entryPath);
+    }
+
+  }
+
+  return htmlFiles;
+
+}
+
+async function initializeNavigationStore() {
+
+  const rendererPath = path.join (__dirname, "../renderer");
+
+  const htmlFiles = await findHtmlFiles(rendererPath);
+
+  for (const htmlPath of htmlFiles) {
+
+    navigationStore.registerHtmlAddresses(htmlPath);
+  }
+}
+
+ipcMain.handle("get-navigation-store", () => {
+
+  return navigationStore.getHtmlAddresses();
+
+});
+
 
 
 ipcMain.handle("select-folder", async () => {
