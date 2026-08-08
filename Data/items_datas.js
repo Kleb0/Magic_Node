@@ -67,11 +67,13 @@ async function registerItem(projectPath, itemPath, type) {
   if (existingItem) {
     return existingItem;
   }
+
+  const itemName = type === "card" ? path.basename(itemPath, path.extname(itemPath)) : path.basename(itemPath);
   
   const item = {
     id: crypto.randomUUID(),
     type,
-    name: path.basename(itemPath),
+    name: itemName,
     projectPath,
     path: itemPath
   };
@@ -89,9 +91,17 @@ async function deleteItem(projectPath, itemPath) {
 
   const items = await getItems(projectPath);
 
-  const updatedItems = items.filter(
-    item => item.path !== itemPath
-  );
+  const updatedItems = items.filter( item => {
+
+    const relativePath = path.relative(itemPath, item.path);
+
+    const isCurrentItem = relativePath === "";
+
+    const isChildItem = relativePath !== "" && !relativePath.startsWith("..") && !path.isAbsolute(relativePath);
+    
+    return !isCurrentItem && !isChildItem;
+
+  });
 
   await fs.writeFile(getProjectItemsDataFile(projectPath),
     JSON.stringify(updatedItems, null, 2),
@@ -102,13 +112,27 @@ async function updateItemPath(projectPath, oldPath, newPath){
     
   const items = await getItems(projectPath);
 
-  const item = items.find(item => item.path === oldPath);
+  let itemFound = false;
 
-  if (!item) {
-    return;
+  for (const item of items) {
+
+    const relativePath = path.relative(oldPath, item.path);
+  
+    const isCurrentItem = relativePath === "";
+
+    const isChildItem = relativePath !== "" && !relativePath.startsWith("..") && !path.isAbsolute(relativePath);
+
+    if(!isCurrentItem && !isChildItem) {continue;}
+ 
+    itemFound = true;
+
+    item.path = isCurrentItem ? newPath : path.join(newPath, relativePath);
+
+    item.name = item.type === "card" ? path.basename(item.path, path.extname(item.path)) : path.basename(item.path);
+  
   }
 
-  item.path = newPath;
+  if(!itemFound) {return;}
 
   await fs.writeFile(getProjectItemsDataFile(projectPath),
     JSON.stringify(items, null, 2),

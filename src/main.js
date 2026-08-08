@@ -257,14 +257,11 @@ ipcMain.handle("move-folder", async(event, projectPath, sourcePath, targetPath) 
   }
 });
 
-ipcMain.handle("create-card", async(event, folderPath, cardName) => {
+ipcMain.handle("create-card", async(event, projectPath, folderPath, cardName) => {
 
   try{
     
-    const cardPath = 
-      await cardManager.createCard(
-        folderPath, cardName
-      );
+    const cardPath = await cardManager.createCard(projectPath, folderPath, cardName);
 
     return{
       success:true,
@@ -280,10 +277,10 @@ ipcMain.handle("create-card", async(event, folderPath, cardName) => {
   }
 });
 
-ipcMain.handle("rename-card", async (event, cardPath, newCardName) => {
+ipcMain.handle("rename-card", async (event, projectPath, cardPath, newCardName) => {
 
   try{
-    await cardManager.renameCard(cardPath, newCardName);
+    await cardManager.renameCard(projectPath,cardPath, newCardName);
   
     return{
       success:true
@@ -296,11 +293,11 @@ ipcMain.handle("rename-card", async (event, cardPath, newCardName) => {
   }
 });
 
-ipcMain.handle("delete-card", async (event, cardPath) => {
+ipcMain.handle("delete-card", async (event, projectPath, cardPath) => {
 
   try{
 
-    await cardManager.deleteCard(cardPath);
+    await cardManager.deleteCard(projectPath, cardPath);
 
     return {
       success: true
@@ -315,11 +312,11 @@ ipcMain.handle("delete-card", async (event, cardPath) => {
 
 });
 
-ipcMain.handle("move-card", async (event, cardPath, targetFolderPath) => {
+ipcMain.handle("move-card", async (event, projectPath, cardPath, targetFolderPath) => {
 
   try{
 
-    await cardManager.moveCard(cardPath, targetFolderPath);
+    await cardManager.moveCard(projectPath, cardPath, targetFolderPath);
 
     return{
       success:true

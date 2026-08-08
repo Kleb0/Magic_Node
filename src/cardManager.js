@@ -1,7 +1,8 @@
 const fs = require("fs/promises");
+const itemsData = require("../Data/items_datas.js")
 const path = require("path");
 
-async function createCard(folderPath, cardName){
+async function createCard(projectPath, folderPath, cardName){
 
   const filePath = path.join(folderPath, `${cardName}.json`);
 
@@ -18,10 +19,12 @@ async function createCard(folderPath, cardName){
 
   await fs.writeFile(filePath, JSON.stringify(card, null, 2), "UTF-8");
 
+  await itemsData.registerItem(projectPath, filePath, "card");
+
   return filePath;
 };
 
-async function renameCard(cardPath, newCardName) {
+async function renameCard(projectPath, cardPath, newCardName) {
 
   const parentFolder = path.dirname(cardPath);
 
@@ -29,20 +32,26 @@ async function renameCard(cardPath, newCardName) {
 
   await fs.rename(cardPath, newPath);
 
+  await itemsData.updateItemPath(projectPath, cardPath, newPath);
+
 }
 
-async function deleteCard(cardPath) {
+async function deleteCard(projectPath, cardPath) {
   
   await fs.rm(cardPath, {force:true });
+
+  await itemsData.deleteItem(projectPath, cardPath)
 }
 
-async function moveCard(cardPath, targetFolderPath) {
+async function moveCard(projectPath, cardPath, targetFolderPath) {
   
   const fileName = path.basename(cardPath);
 
   const newCardPath = path.join(targetFolderPath, fileName);
 
   await fs.rename(cardPath, newCardPath);
+
+  await itemsData.updateItemPath(projectPath, cardPath, newCardPath);
 
 }
 

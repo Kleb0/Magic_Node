@@ -24,13 +24,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     moveFolder : (projectPath, sourcePath, targetPath) => ipcRenderer.invoke("move-folder", projectPath, sourcePath, targetPath),
 
-    createCard : (folderPath, cardName) => ipcRenderer.invoke("create-card", folderPath, cardName),
+    createCard : (projectPath, folderPath, cardName) => ipcRenderer.invoke("create-card", projectPath, folderPath, cardName),
 
-    renameCard : (cardPath, newCardName) => ipcRenderer.invoke("rename-card", cardPath, newCardName),
+    renameCard : (projectPath, cardPath, newCardName) => ipcRenderer.invoke("rename-card", projectPath, cardPath, newCardName),
 
-    deleteCard : (cardPath) => ipcRenderer.invoke("delete-card", cardPath),
+    deleteCard : (projectPath, cardPath) => ipcRenderer.invoke("delete-card", projectPath, cardPath),
 
-    moveCard : (cardPath, targetFolderPath) => ipcRenderer.invoke("move-card", cardPath, targetFolderPath),
+    moveCard : (projectPath, cardPath, targetFolderPath) => ipcRenderer.invoke("move-card", projectPath, cardPath, targetFolderPath),
 
     getFolderCards: (folderPath, projectPath) => ipcRenderer.invoke("get-folder-cards", folderPath, projectPath),
 

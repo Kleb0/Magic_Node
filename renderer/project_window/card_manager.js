@@ -71,7 +71,7 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
       }
     }
 
-    const result = await window.electronAPI.createCard(destinationFolder, cardName);
+    const result = await window.electronAPI.createCard(projectPath, destinationFolder, cardName);
 
     if(!result.success){
       alert(result.message);
@@ -98,6 +98,7 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
     }
 
     const result = await window.electronAPI.renameCard(
+      projectPath,
       selectedItem.path,
       newName
     );
@@ -126,7 +127,7 @@ export function initializeCardManager(cardArea, getSelectedItem, projectPath, cl
       return;
     }
 
-    const result = await window.electronAPI.deleteCard(selectedItem.path);
+    const result = await window.electronAPI.deleteCard(projectPath, selectedItem.path);
 
     if(!result.success) {
       alert (result.message);

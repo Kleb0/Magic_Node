@@ -654,6 +654,7 @@ async function handleDocumentMouseUp(){
       } else if(draggedItem.type === "card") {
 
         await window.electronAPI.moveCard(
+          projectPath,
           draggedItem.path,
           destination
         );
@@ -741,7 +742,7 @@ createFileButton.addEventListener("click", async () => {
      destinationFolder = selectedItem.path;
   }
 
-  const result = await window.electronAPI.createCard(destinationFolder, cardName);
+  const result = await window.electronAPI.createCard(projectPath, destinationFolder, cardName);
 
   if(!result.success) {
     alert(result.message);
