@@ -177,13 +177,19 @@ ipcMain.handle(
   }  
 );
 
-ipcMain.handle("create-folder", async (event, projectPath, folderName) => {
+ipcMain.handle("create-folder", async (event, projectPath, parentFolderPath, folderName) => {
 
   try{
-    await fs.mkdir(path.join(projectPath, folderName));
+      
+    const result = await projectManager.createFolder(
+      projectPath,
+      parentFolderPath,
+      folderName
+    );
 
     return {
-      success:true
+      success:true,
+      ...result
     };
   } catch(error){
     return {
@@ -199,9 +205,7 @@ ipcMain.handle(  "delete-folder", async (event, projectPath, folderName) => {
 
   try{
 
-    await projectManager.deleteFolder(
-      folderName
-    );
+    await projectManager.deleteFolder(projectPath, folderName );
 
     return{
     success:true
@@ -214,10 +218,11 @@ ipcMain.handle(  "delete-folder", async (event, projectPath, folderName) => {
   }
 });
 
-ipcMain.handle("rename-folder", async (event, folderPath, newFolderName) => {
+ipcMain.handle("rename-folder", async (event, projectPath, folderPath, newFolderName) => {
 
     try{
     await projectManager.renameFolder(
+        projectPath,
         folderPath,
         newFolderName
     );
@@ -235,12 +240,11 @@ ipcMain.handle("rename-folder", async (event, folderPath, newFolderName) => {
 
 });
 
-ipcMain.handle("move-folder", async(event, sourcePath, targetPath) => {
+ipcMain.handle("move-folder", async(event, projectPath, sourcePath, targetPath) => {
   
    try{
-    await projectManager.moveFolder(sourcePath, 
-      targetPath
-   );
+
+    await projectManager.moveFolder(projectPath, sourcePath, targetPath);
 
     return {
      success:true

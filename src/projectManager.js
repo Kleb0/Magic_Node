@@ -1,5 +1,5 @@
 const { app } = require("electron");
-
+const itemsData = require("../Data/items_datas.js");
 const fs = require("fs/promises");
 const path = require("path");
 
@@ -66,13 +66,38 @@ async function createProject(parentFolder, projectName) {
 
     await fs.mkdir(projectPath);
 
-    await fs.mkdir(path.join(projectPath, "Maps"));
-    await fs.mkdir(path.join(projectPath, "Characters"));
-    await fs.mkdir(path.join(projectPath, "Creatures"));
+    const mapsPath = path.join(projectPath,"Maps");
+    const charactersPath = path.join(projectPath, "Characters");
+    const creaturesPath = path.join(projectPath, "Creatures");
+
+ 
+    await fs.mkdir(mapsPath);
+    await fs.mkdir(charactersPath);
+    await fs.mkdir(creaturesPath);
+
+    await itemsData.initializeProjectItemsData(projectPath);
+
+    await itemsData.registerItem(
+      projectPath,
+      mapsPath,
+      "folder"
+    );
+
+    await itemsData.registerItem(
+      projectPath,
+      charactersPath,
+      "folder"
+    );
+
+    await itemsData.registerItem(
+      projectPath,
+      creaturesPath,
+      "folder"
+    );
 
     await registerProject(
-        parentFolder,
-        projectName
+      parentFolder,
+      projectName
     );
 
     return projectPath;
@@ -197,13 +222,37 @@ async function deleteProject(parentFolder, projectName) {
 
 }
 
-async function deleteFolder(folderPath) {
+async function createFolder(projectPath, parentFolderPath, folderName) {
+  
+  const folderPath = path.join(
+    parentFolderPath,
+    folderName,
+  );
 
-  await fs.rm(folderPath,{recursive: true, force: true});
+  await fs.mkdir(folderPath);
+
+  const item = await itemsData.registerItem(
+    projectPath,
+    folderPath,
+    "folder"
+  );
+
+  return {
+    folderPath,
+    item
+  };
 
 }
 
-async function renameFolder(folderPath, newFolderName) {
+async function deleteFolder(projectPath, folderPath) {
+
+  await fs.rm(folderPath,{recursive: true, force: true});
+
+  await itemsData.deleteItem(projectPath, folderPath);
+
+}
+
+async function renameFolder(projectPath, folderPath, newFolderName) {
 
   const parentFolder = path.dirname(folderPath);
 
@@ -211,15 +260,20 @@ async function renameFolder(folderPath, newFolderName) {
 
   await fs.rename(folderPath, newPath);
 
+  await itemsData.updateItemPath(projectPath, folderPath, newPath);
+
+
 }
 
-async function moveFolder(sourcePath, targetFolder){
+async function moveFolder(projectPath, sourcePath, targetFolder){
     
   const folderName = path.basename(sourcePath);
 
   const destination = path.join(targetFolder, folderName);
 
   await fs.rename(sourcePath, destination);
+
+  await itemsData.updateItemPath(projectPath, sourcePath, destination);
 }
 
 module.exports = {
@@ -229,6 +283,7 @@ module.exports = {
     hasProjects,
     getProjectList,
     getProjectFolders,
+    createFolder,
     deleteFolder,
     renameFolder,
     moveFolder

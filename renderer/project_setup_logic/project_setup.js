@@ -63,12 +63,22 @@ function initializeProjectSetup() {
     if(projectName === ""|| parentFolder === ""){
       return;
     }
-
-    await window.electronAPI.createProject(
+    
+    const result = await window.electronAPI.createProject(
       parentFolder,
       projectName
     );
-  
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    document.getElementById("project-name").value = "";
+    document.getElementById("project-folder").value = "";
+
+    await loadProjectSetupBoard()
+
   });
 }
 

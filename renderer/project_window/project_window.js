@@ -644,11 +644,15 @@ async function handleDocumentMouseUp(){
     if(destination !== draggedItem.path){
       
       if(draggedItem.type === "folder"){
+
         await window.electronAPI.moveFolder(
+        projectPath,
         draggedItem.path,
         destination
         );
+      
       } else if(draggedItem.type === "card") {
+
         await window.electronAPI.moveCard(
           draggedItem.path,
           destination
@@ -707,6 +711,7 @@ createFolderButton.addEventListener("click", async () => {
   : selectedItem.path;
 
   const result = await window.electronAPI.createFolder(
+    projectPath,
     parentPath,
     folderName
   );
@@ -765,6 +770,7 @@ renameFolderButton.addEventListener("click", async () => {
   }
 
   const result = await window.electronAPI.renameFolder(
+     projectPath,
      selectedItem.path,
      newName, 
   );
